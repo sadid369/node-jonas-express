@@ -9,8 +9,9 @@ const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSW
 const LOCAL_DB = process.env.DATABASE_LOCAL;
 
 mongoose.connect(DB).then((con) => {
-    console.log(con.connections);
+    // console.log(con.connections);
     console.log('DB Connection Successful');
 })
+
 
 app.listen(port, () => console.log('> Server is up and running on port : ' + port))
