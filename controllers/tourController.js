@@ -48,7 +48,7 @@ exports.getTour = async (req, res, next) => {
             data: { tour }
         });
     } catch (error) {
-        next(new AppError("No tour found with that id", 404));
+        next(new AppError(error, "No tour found with that id", 404));
     }
 
 
@@ -69,7 +69,7 @@ exports.updateTour = async (req, res, next) => {
             }
         });
     } catch (error) {
-        next(new AppError("No tour found with that id", 404));
+        next(new AppError(error, "No tour found with that id", 404));
     }
 
 };
@@ -83,7 +83,7 @@ exports.deleteTour = async (req, res, next) => {
             status: 'success', data: null,
         });
     } catch (error) {
-        next(new AppError("No tour found with that id", 404));
+        next(new AppError(error, "No tour found with that id", 404));
     }
 };
 
