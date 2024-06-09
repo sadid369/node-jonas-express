@@ -5,6 +5,7 @@ const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 const asyncHanlder = require('express-async-handler');
+const User = require('./models/userModel');
 
 require('dotenv').config();
 const app = express();
@@ -16,6 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 
 app.use('/api/v1/users', userRouter);
+
 app.use('/api/v1/tours', tourRouter);
 app.all('*', (req, res, next) => {
   const err = new AppError(`Can't Find ${req.originalUrl}`, 404);
