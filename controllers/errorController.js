@@ -17,34 +17,15 @@ const handleValidationErrorDB = (err) => {
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
-    error: err.error,
+    error:
+      err.error === null || err.error === undefined ? undefined : err.error,
     message: err.message,
+    statusCode: err.statusCode,
+    isOperational: err.isOperational,
     stack: err.stack,
   });
 };
 const sendErrorProd = (err, res) => {
-  //Operational Error, trusted error: send message to client
-  // err.operational = false;
-  // if (err.operational) {
-  //   console.log(err.json());
-  //   res.status(err.statusCode).json({
-  //     status: err.status,
-  //     message: err.message,
-  //   });
-  // }
-  // // programming or other unknown error: don't leak error details to client
-  // else {
-  //   // 1) Log Error
-  //   console.error('ERROR 🔥', err);
-  //   // 2) send generic message
-  //   res
-  //     .status(500)
-  //     .json({ status: 'Error', message: 'Something went very wrong' });
-  // }
-  //   console.log(err.error.code);
-  //   res.status(err.statusCode).json({
-  //     err,
-  //   });
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -55,7 +36,6 @@ const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   // err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
-    console.log(err);
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let mError = { ...err };
