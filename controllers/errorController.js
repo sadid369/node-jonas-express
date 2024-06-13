@@ -13,6 +13,12 @@ const handleValidationErrorDB = (err) => {
   const message = `Invalid Duplicate Data. ${errorMessage.join('. ')}`;
   return new AppError(err, message, 400);
 };
+const handleJWTError = (err) => {
+  return new AppError(err, 'Invalid Token Please Log in Again', 401);
+};
+const handleJWTExpiredError = (err) => {
+  return new AppError(err, 'Your Token has Expire Please Log in Again', 401);
+};
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -48,6 +54,12 @@ const globalErrorHandler = (err, req, res, next) => {
 
     if (mError.error.name === 'ValidationError') {
       mError = handleValidationErrorDB(mError);
+    }
+    if (mError.error.name === 'JsonWebTokenError') {
+      mError = handleJWTError(mError);
+    }
+    if (mError.error.name === 'TokenExpiredError') {
+      mError = handleJWTExpiredError(mError);
     }
     console.log(mError);
     sendErrorProd(mError, res);

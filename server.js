@@ -10,7 +10,6 @@ const mongoose = require('mongoose');
 
 // const globalErrorHandler = require('./controllers/errorController');
 console.log(app.get('env'));
-
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;

@@ -1,4 +1,5 @@
-var jwt = require('jsonwebtoken');
+const { promisify } = require('util');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const signToken = (id) => {
@@ -64,6 +65,49 @@ exports.login = async (req, res, next) => {
       status: 'success',
       token,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.protect = async (req, res, next) => {
+  let token;
+  try {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      throw new AppError(
+        null,
+        'You are not Logged In, please login to get access',
+        401
+      );
+    }
+    let id;
+    let iat;
+    jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+      if (err) {
+        throw new AppError(err, 'Invalid Token Error', 401);
+      } else if (decoded) {
+        id = decoded.id;
+        iat = decoded.iat;
+      }
+    });
+    const currentUser = await User.findById(id);
+    if (!currentUser) {
+      throw new AppError(null, 'No User Found Using the Token ID', 401);
+    }
+    const isChanged = currentUser.changePasswordAfter(iat);
+
+    if (isChanged) {
+      throw new AppError(null, 'User updated recently please login again', 401);
+    }
+    req.user = currentUser;
+
+    next();
   } catch (error) {
     next(error);
   }
